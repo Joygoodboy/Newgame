@@ -272,9 +272,12 @@ class Creature {
         this.children = [];
         this.systems = [];
     }
-    follow(x, y) {
+    follow(x, y, flee = false) {
         var dist = ((this.x - x) ** 2 + (this.y - y) ** 2) ** 0.5;
         var angle = Math.atan2(y - this.y, x - this.x);
+        if (flee) {
+            angle += Math.PI;
+        }
         //Update forward
         var accel = this.fAccel;
         if (this.systems.length > 0) {
@@ -397,21 +400,21 @@ function setupLizard(size, legs, tail) {
 
 function setupSpider(size, legs) {
     var s = size;
-    spider = new Creature('spider', window.innerWidth / 4, window.innerHeight / 4, 0, s * 12, s * 3, 0.3, 12, 0.6, 0.1, 0.5, 0.5);
+    spider = new Creature('spider', window.innerWidth / 4, window.innerHeight / 4, 0, s * 10, s * 2.5, 0.3, 12, 0.5, 0.1, 0.5, 0.5);
 
     // Body with Cephalothorax and Abdomen
-    var cephalothorax = new Segment(spider, s * 4, 0, 0.5, 1.2);
-    var abdomen = new Segment(cephalothorax, s * 6, 0, 0.5, 1.5);
+    var cephalothorax = new Segment(spider, s * 3, 0, 0.5, 1.2);
+    var abdomen = new Segment(cephalothorax, s * 5, 0, 0.5, 1.5);
 
     //Legs attached to cephalothorax
     for (var i = 0; i < legs; i++) {
         var side = (i < legs / 2) ? -1 : 1;
         var angle = side * (Math.PI / 3 + (i % (legs / 2)) * Math.PI / 6)
-        var node = new Segment(cephalothorax, s * 8, angle, 0, 8);
-        node = new Segment(node, s * 12, -angle / 2, 6.28, 1);
-        node = new Segment(node, s * 12, angle / 2, 3.1415, 2);
-        node = new Segment(node, s * 8, -angle / 4, 3.1415, 2);
-        new LegSystem(node, 4, s * 18, spider);
+        var node = new Segment(cephalothorax, s * 6, angle, 0, 8);
+        node = new Segment(node, s * 10, -angle / 2, 6.28, 1);
+        node = new Segment(node, s * 10, angle / 2, 3.1415, 2);
+        node = new Segment(node, s * 6, -angle / 4, 3.1415, 2);
+        new LegSystem(node, 4, s * 16, spider);
     }
 }
 
@@ -433,6 +436,7 @@ function init() {
 
 restartButton.onclick = function() {
     init();
+    requestAnimationFrame(gameLoop);
 };
 
 let lastTime = 0;
@@ -458,7 +462,7 @@ function gameLoop(timestamp) {
     }
 
     lizard.follow(Input.mouse.x, Input.mouse.y);
-    spider.follow(lizard.x, lizard.y);
+    spider.follow(lizard.x, lizard.y, true);
     
     requestAnimationFrame(gameLoop);
 }
