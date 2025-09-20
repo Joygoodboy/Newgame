@@ -397,21 +397,21 @@ function setupLizard(size, legs, tail) {
 
 function setupSpider(size, legs) {
     var s = size;
-    spider = new Creature('spider', window.innerWidth / 4, window.innerHeight / 4, 0, s * 15, s * 4, 0.3, 12, 0.7, 0.1, 0.5, 0.5);
+    spider = new Creature('spider', window.innerWidth / 4, window.innerHeight / 4, 0, s * 12, s * 3, 0.3, 12, 0.6, 0.1, 0.5, 0.5);
 
     // Body with Cephalothorax and Abdomen
     var cephalothorax = new Segment(spider, s * 4, 0, 0.5, 1.2);
-    var abdomen = new Segment(cephalothorax, s * 8, 0, 0.5, 1.5);
+    var abdomen = new Segment(cephalothorax, s * 6, 0, 0.5, 1.5);
 
     //Legs attached to cephalothorax
     for (var i = 0; i < legs; i++) {
         var side = (i < legs / 2) ? -1 : 1;
         var angle = side * (Math.PI / 3 + (i % (legs / 2)) * Math.PI / 6)
-        var node = new Segment(cephalothorax, s * 10, angle, 0, 8);
-        node = new Segment(node, s * 14, -angle / 2, 6.28, 1);
-        node = new Segment(node, s * 14, angle / 2, 3.1415, 2);
-        node = new Segment(node, s * 10, -angle / 4, 3.1415, 2);
-        new LegSystem(node, 4, s * 20, spider);
+        var node = new Segment(cephalothorax, s * 8, angle, 0, 8);
+        node = new Segment(node, s * 12, -angle / 2, 6.28, 1);
+        node = new Segment(node, s * 12, angle / 2, 3.1415, 2);
+        node = new Segment(node, s * 8, -angle / 4, 3.1415, 2);
+        new LegSystem(node, 4, s * 18, spider);
     }
 }
 
@@ -433,13 +433,16 @@ function init() {
 
 restartButton.onclick = function() {
     init();
-    gameLoop();
 };
 
-function gameLoop() {
+let lastTime = 0;
+function gameLoop(timestamp) {
     if (gameOver) {
         return;
     }
+    
+    let deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -454,11 +457,11 @@ function gameLoop() {
         gameOverElement.style.display = 'block';
     }
 
-    spider.follow(lizard.x, lizard.y);
     lizard.follow(Input.mouse.x, Input.mouse.y);
-
+    spider.follow(lizard.x, lizard.y);
+    
     requestAnimationFrame(gameLoop);
 }
 
 init();
-gameLoop();
+requestAnimationFrame(gameLoop);
