@@ -4,11 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Reptile Interactive Cursor</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: sans-serif;
+            font-size: 24px;
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: sans-serif;
+            font-size: 48px;
+            text-align: center;
+            display: none;
+        }
+        #restartButton {
+            font-size: 24px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <body>
-    <script  src="./script.js"></script>
-  </body>
-  </html>
+    <div id="score">Score: 0</div>
+    <div id="gameOver">
+        <div>Game Over</div>
+        <button id="restartButton">Restart</button>
+    </div>
+    <script src="./script.js"></script>
 </body>
 </html>
