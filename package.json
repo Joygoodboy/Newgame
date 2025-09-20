@@ -1,0 +1,15 @@
+{
+  "name": "reptile-game",
+  "version": "1.0.0",
+  "description": "A simple game with a lizard and a spider.",
+  "main": "script.js",
+  "scripts": {
+    "start": "npx http-server ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}

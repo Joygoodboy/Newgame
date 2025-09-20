@@ -1,0 +1,12 @@
+{
+  "previews": [
+    {
+      "id": "web",
+      "port": 8080,
+      "command": ["npm", "start"],
+      "env": {
+        "PORT": "$PORT"
+      }
+    }
+  ]
+}

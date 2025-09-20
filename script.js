@@ -43,12 +43,22 @@ var Input = {
     Input.mouse.x = event.clientX;
     Input.mouse.y = event.clientY;
   });
+  document.addEventListener("touchstart", function(event) {
+    Input.mouse.left = true;
+    Input.mouse.x = event.touches[0].clientX;
+    Input.mouse.y = event.touches[0].clientY;
+  });
+  document.addEventListener("touchend", function(event) {
+    Input.mouse.left = false;
+  });
+  document.addEventListener("touchmove", function(event) {
+    Input.mouse.x = event.touches[0].clientX;
+    Input.mouse.y = event.touches[0].clientY;
+  });
   //Sets up canvas
   var canvas = document.createElement("canvas");
   document.body.appendChild(canvas);
   canvas.width = Math.max(window.innerWidth, window.innerWidth);
-  
-  //canvas.height = Math.max(window.innerWidth, window.innerWidth);
   
   canvas.height = window.innerHeight;
   canvas.style.position = "absolute";
@@ -82,10 +92,6 @@ var Input = {
           Math.PI *
           Math.floor((this.relAngle - this.defAngle) / 2 / Math.PI + 1 / 2);
       if (flex) {
-        //		this.relAngle=this.range/
-        //				(1+Math.exp(-4*(this.relAngle-this.defAngle)/
-        //				(this.stiffness*this.range)))
-        //			  -this.range/2+this.defAngle;
         this.relAngle = Math.min(
           this.defAngle + this.range / 2,
           Math.max(
@@ -123,7 +129,6 @@ var Input = {
       this.absAngle = Math.atan2(this.y - y, this.x - x);
       this.relAngle = this.absAngle - this.parent.absAngle;
       this.updateRelative(false, true);
-      //this.draw();
       if (iter) {
         for (var i = 0; i < this.children.length; i++) {
           this.children[i].follow(true);
@@ -142,7 +147,6 @@ var Input = {
       var node = end;
       for (var i = 0; i < length; i++) {
         this.nodes.unshift(node);
-        //node.stiffness=1;
         node = node.parent;
         if (!node.isSegment) {
           this.length = i + 1;
@@ -178,7 +182,6 @@ var Input = {
           }
         }
       }
-      //this.nodes[0].updateRelative(true,false)
     }
     update() {
       this.moveTo(Input.mouse.x, Input.mouse.y);
@@ -192,7 +195,6 @@ var Input = {
       this.step = 0; //0 stand still, 1 move forward,2 move towards foothold
       this.forwardness = 0;
   
-      //For foot goal placement
       this.reach =
         0.9 *
         ((this.end.x - this.hip.x) ** 2 + (this.end.y - this.hip.y) ** 2) ** 0.5;
@@ -202,19 +204,15 @@ var Input = {
       relAngle -= 2 * Math.PI * Math.floor(relAngle / 2 / Math.PI + 1 / 2);
       this.swing = -relAngle + (2 * (relAngle < 0) - 1) * Math.PI / 2;
       this.swingOffset = this.creature.absAngle - this.hip.absAngle;
-      //this.swing*=(2*(relAngle>0)-1);
     }
     update(x, y) {
       this.moveTo(this.goalX, this.goalY);
-      //this.nodes[0].follow(true,true)
       if (this.step == 0) {
         var dist =
           ((this.end.x - this.goalX) ** 2 + (this.end.y - this.goalY) ** 2) **
           0.5;
         if (dist > 1) {
           this.step = 1;
-          //this.goalX=x;
-          //this.goalY=y;
           this.goalX =
             this.hip.x +
             this.reach *
@@ -242,42 +240,26 @@ var Input = {
           this.goalY = this.hip.y + (this.end.y - this.hip.y);
         }
       }
-      //	ctx.strokeStyle='blue';
-      //	ctx.beginPath();
-      //	ctx.moveTo(this.end.x,this.end.y);
-      //	ctx.lineTo(this.hip.x+this.reach*Math.cos(this.swing+this.hip.absAngle+this.swingOffset),
-      //				this.hip.y+this.reach*Math.sin(this.swing+this.hip.absAngle+this.swingOffset));
-      //	ctx.stroke();
-      //	ctx.strokeStyle='black';
     }
   }
   class Creature {
     constructor(
-      x,
-      y,
-      angle,
-      fAccel,
-      fFric,
-      fRes,
-      fThresh,
-      rAccel,
-      rFric,
-      rRes,
-      rThresh
+      type, x, y, angle, fAccel, fFric, fRes, fThresh, rAccel, rFric, rRes, rThresh
     ) {
-      this.x = x; //Starting position
+      this.type = type;
+      this.x = x; 
       this.y = y;
-      this.absAngle = angle; //Staring angle
-      this.fSpeed = 0; //Forward speed
-      this.fAccel = fAccel; //Force when moving forward
-      this.fFric = fFric; //Friction against forward motion
-      this.fRes = fRes; //Resistance to motion
-      this.fThresh = fThresh; //minimum distance to target to keep moving forward
-      this.rSpeed = 0; //Rotational speed
-      this.rAccel = rAccel; //Force when rotating
-      this.rFric = rFric; //Friction against rotation
-      this.rRes = rRes; //Resistance to rotation
-      this.rThresh = rThresh; //Maximum angle difference before rotation
+      this.absAngle = angle;
+      this.fSpeed = 0; 
+      this.fAccel = fAccel;
+      this.fFric = fFric; 
+      this.fRes = fRes; 
+      this.fThresh = fThresh;
+      this.rSpeed = 0;
+      this.rAccel = rAccel;
+      this.rFric = rFric;
+      this.rRes = rRes; 
+      this.rThresh = rThresh;
       this.children = [];
       this.systems = [];
     }
@@ -326,28 +308,21 @@ var Input = {
       this.draw(true);
     }
     draw(iter) {
-      var r = 4;
-      ctx.beginPath();
-      ctx.arc(
-        this.x,
-        this.y,
-        r,
-        Math.PI / 4 + this.absAngle,
-        7 * Math.PI / 4 + this.absAngle
-      );
-      ctx.moveTo(
-        this.x + r * Math.cos(7 * Math.PI / 4 + this.absAngle),
-        this.y + r * Math.sin(7 * Math.PI / 4 + this.absAngle)
-      );
-      ctx.lineTo(
-        this.x + r * Math.cos(this.absAngle) * 2 ** 0.5,
-        this.y + r * Math.sin(this.absAngle) * 2 ** 0.5
-      );
-      ctx.lineTo(
-        this.x + r * Math.cos(Math.PI / 4 + this.absAngle),
-        this.y + r * Math.sin(Math.PI / 4 + this.absAngle)
-      );
-      ctx.stroke();
+        if (this.type === 'lizard') {
+            var r = 4;
+            ctx.beginPath();
+            ctx.arc(this.x,this.y,r,Math.PI / 4 + this.absAngle, 7 * Math.PI / 4 + this.absAngle);
+            ctx.moveTo(this.x + r * Math.cos(7 * Math.PI / 4 + this.absAngle), this.y + r * Math.sin(7 * Math.PI / 4 + this.absAngle));
+            ctx.lineTo(this.x + r * Math.cos(this.absAngle) * 2 ** 0.5, this.y + r * Math.sin(this.absAngle) * 2 ** 0.5);
+            ctx.lineTo(this.x + r * Math.cos(Math.PI / 4 + this.absAngle),this.y + r * Math.sin(Math.PI / 4 + this.absAngle));
+            ctx.stroke();
+        } else if (this.type === 'spider') {
+            var r = 6; // Spider body radius
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, r, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+      
       if (iter) {
         for (var i = 0; i < this.children.length; i++) {
           this.children[i].draw(true);
@@ -355,211 +330,91 @@ var Input = {
       }
     }
   }
-  //Initializes and animates
-  var critter;
-  function setupSimple() {
-    //(x,y,angle,fAccel,fFric,fRes,fThresh,rAccel,rFric,rRes,rThresh)
-    var critter = new Creature(
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-      0,
-      12,
-      1,
-      0.5,
-      16,
-      0.5,
-      0.085,
-      0.5,
-      0.3
-    );
-    var node = critter;
-    //(parent,size,angle,range,stiffness)
-    for (var i = 0; i < 128; i++) {
-      var node = new Segment(node, 8, 0, 3.14159 / 2, 1);
-    }
-    setInterval(function() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      critter.follow(Input.mouse.x, Input.mouse.y);
-    }, 33);
-  }
-  function setupTentacle() {
-    //(x,y,angle,fAccel,fFric,fRes,fThresh,rAccel,rFric,rRes,rThresh)
-    critter = new Creature(
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-      0,
-      12,
-      1,
-      0.5,
-      16,
-      0.5,
-      0.085,
-      0.5,
-      0.3
-    );
-    var node = critter;
-    //(parent,size,angle,range,stiffness)
-    for (var i = 0; i < 32; i++) {
-      var node = new Segment(node, 8, 0, 2, 1);
-    }
-    //(end,length,speed,creature)
-    var tentacle = new LimbSystem(node, 32, 8, critter);
-    setInterval(function() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      critter.follow(canvas.width / 2, canvas.height / 2);
-      ctx.beginPath();
-      ctx.arc(Input.mouse.x, Input.mouse.y, 2, 0, 6.283);
-      ctx.fill();
-    }, 33);
-  }
-  function setupArm() {
-    //(x,y,angle,fAccel,fFric,fRes,fThresh,rAccel,rFric,rRes,rThresh)
-    var critter = new Creature(
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-      0,
-      12,
-      1,
-      0.5,
-      16,
-      0.5,
-      0.085,
-      0.5,
-      0.3
-    );
-    var node = critter;
-    //(parent,size,angle,range,stiffness)
-    for (var i = 0; i < 3; i++) {
-      var node = new Segment(node, 80, 0, 3.1416, 1);
-    }
-    var tentacle = new LimbSystem(node, 3, critter);
-    setInterval(function() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      critter.follow(canvas.width / 2, canvas.height / 2);
-    }, 33);
-    ctx.beginPath();
-    ctx.arc(Input.mouse.x, Input.mouse.y, 2, 0, 6.283);
-    ctx.fill();
-  }
-  
-  function setupTestSquid(size, legs) {
-    //(x,y,angle,fAccel,fFric,fRes,fThresh,rAccel,rFric,rRes,rThresh)
-    critter = new Creature(
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-      0,
-      size * 10,
-      size * 3,
-      0.5,
-      16,
-      0.5,
-      0.085,
-      0.5,
-      0.3
-    );
-    var legNum = legs;
-    var jointNum = 32;
-    for (var i = 0; i < legNum; i++) {
-      var node = critter;
-      var ang = Math.PI / 2 * (i / (legNum - 1) - 0.5);
-      for (var ii = 0; ii < jointNum; ii++) {
-        var node = new Segment(
-          node,
-          size * 64 / jointNum,
-          ang * (ii == 0),
-          3.1416,
-          1.2
-        );
-      }
-      //(end,length,speed,creature,dist)
-      var leg = new LegSystem(node, jointNum, size * 30, critter);
-    }
-    setInterval(function() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      critter.follow(Input.mouse.x, Input.mouse.y);
-    }, 33);
-  }
+  var lizard;
+  var spider;
   function setupLizard(size, legs, tail) {
     var s = size;
-    //(x,y,angle,fAccel,fFric,fRes,fThresh,rAccel,rFric,rRes,rThresh)
-    critter = new Creature(
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-      0,
-      s * 10,
-      s * 2,
-      0.5,
-      16,
-      0.5,
-      0.085,
-      0.5,
-      0.3
-    );
-    var spinal = critter;
-    //(parent,size,angle,range,stiffness)
+    lizard = new Creature('lizard', window.innerWidth / 2, window.innerHeight / 2, 0, s * 10, s * 2, 0.5, 16, 0.5, 0.085, 0.5, 0.3);
+    var spinal = lizard;
     //Neck
     for (var i = 0; i < 6; i++) {
       spinal = new Segment(spinal, s * 4, 0, 3.1415 * 2 / 3, 1.1);
-      for (var ii = -1; ii <= 1; ii += 2) {
-        var node = new Segment(spinal, s * 3, ii, 0.1, 2);
-        for (var iii = 0; iii < 3; iii++) {
-          node = new Segment(node, s * 0.1, -ii * 0.1, 0.1, 2);
-        }
-      }
     }
     //Torso and legs
     for (var i = 0; i < legs; i++) {
       if (i > 0) {
-        //Vertebrae and ribs
         for (var ii = 0; ii < 6; ii++) {
           spinal = new Segment(spinal, s * 4, 0, 1.571, 1.5);
-          for (var iii = -1; iii <= 1; iii += 2) {
-            var node = new Segment(spinal, s * 3, iii * 1.571, 0.1, 1.5);
-            for (var iv = 0; iv < 3; iv++) {
-              node = new Segment(node, s * 3, -iii * 0.3, 0.1, 2);
-            }
-          }
         }
       }
-      //Legs and shoulders
+      //Legs
       for (var ii = -1; ii <= 1; ii += 2) {
         var node = new Segment(spinal, s * 12, ii * 0.785, 0, 8); //Hip
         node = new Segment(node, s * 16, -ii * 0.785, 6.28, 1); //Humerus
         node = new Segment(node, s * 16, ii * 1.571, 3.1415, 2); //Forearm
-        for (
-          var iii = 0;
-          iii < 4;
-          iii++ //fingers
-        ) {
-          new Segment(node, s * 4, (iii / 3 - 0.5) * 1.571, 0.1, 4);
-        }
-        new LegSystem(node, 3, s * 12, critter, 4);
+        new LegSystem(node, 3, s * 12, lizard, 4);
       }
     }
     //Tail
     for (var i = 0; i < tail; i++) {
       spinal = new Segment(spinal, s * 4, 0, 3.1415 * 2 / 3, 1.1);
-      for (var ii = -1; ii <= 1; ii += 2) {
-        var node = new Segment(spinal, s * 3, ii, 0.1, 2);
-        for (var iii = 0; iii < 3; iii++) {
-          node = new Segment(node, s * 3 * (tail - i) / tail, -ii * 0.1, 0.1, 2);
-        }
-      }
     }
-    setInterval(function() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      critter.follow(Input.mouse.x, Input.mouse.y);
-    }, 33);
   }
+
+function setupSpider(size, legs) {
+    var s = size;
+    spider = new Creature('spider', window.innerWidth / 4, window.innerHeight / 4, 0, s * 15, s * 4, 0.3, 12, 0.7, 0.1, 0.5, 0.5);
+    
+    // Body with Cephalothorax and Abdomen
+    var cephalothorax = new Segment(spider, s * 4, 0, 0.5, 1.2);
+    var abdomen = new Segment(cephalothorax, s * 8, 0, 0.5, 1.5);
+    
+    //Legs attached to cephalothorax
+    for (var i = 0; i < legs; i++) {
+        var side = (i < legs / 2) ? -1 : 1;
+        var angle = side * (Math.PI / 3 + (i % (legs/2)) * Math.PI / 6)
+        var node = new Segment(cephalothorax, s * 10, angle, 0, 8); 
+        node = new Segment(node, s * 14, -angle/2, 6.28, 1); 
+        node = new Segment(node, s * 14, angle/2, 3.1415, 2); 
+        node = new Segment(node, s * 10, -angle/4, 3.1415, 2);
+        new LegSystem(node, 4, s * 20, spider);
+    }
+  }
+
   canvas.style.backgroundColor = "black";
   ctx.strokeStyle = "white";
-  //setupSimple();//Just the very basic string
-  //setupTentacle();//Tentacle that reaches for mouse
-  //setupLizard(.5,100,128);//Literal centipede
-  //setupSquid(2,8);//Spidery thing
-  var legNum = Math.floor(1 + Math.random() * 12);
-  setupLizard(
-    8 / Math.sqrt(legNum),
-    legNum,
-    Math.floor(4 + Math.random() * legNum * 8)
-  );
+  ctx.fillStyle = "white";
+
+  var legNum = 4; 
+  setupLizard(8 / Math.sqrt(legNum), legNum, 20);
+  setupSpider(5, 8);
+
+
+  setInterval(function() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      var panicDistance = 150;
+      var fleeDistance = 300;
+      var distBetween = Math.hypot(lizard.x - spider.x, lizard.y - spider.y);
+
+      if (distBetween < panicDistance) {
+          var angleAway = Math.atan2(spider.y - lizard.y, spider.x - lizard.x);
+          spider.target = {
+              x: spider.x + Math.cos(angleAway) * fleeDistance,
+              y: spider.y + Math.sin(angleAway) * fleeDistance
+          };
+      } else if (Math.random() > 0.98) { // Occasionally move to a new spot
+        spider.target = {
+            x: spider.x + (Math.random() - 0.5) * 200,
+            y: spider.y + (Math.random() - 0.5) * 200,
+        }
+      }
+
+      if(spider.target){
+        spider.follow(spider.target.x, spider.target.y);
+      } else { // If no target, just stay put
+        spider.follow(spider.x, spider.y);
+      }
+
+      lizard.follow(Input.mouse.x, Input.mouse.y);
+    }, 33);
