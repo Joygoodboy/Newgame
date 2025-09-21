@@ -33,7 +33,7 @@ document.addEventListener("mouseup", function(event) {
         Input.mouse.left = false;
     }
     if ((event.button = 1)) {
-        Input.mouse.middle = true;
+        Input.mouse.middle = false;
     }
     if ((event.button = 2)) {
         Input.mouse.right = false;
@@ -310,11 +310,6 @@ class Creature {
         this.x += this.speed * Math.cos(this.absAngle);
         this.y += this.speed * Math.sin(this.absAngle);
 
-        // Keep spider within canvas boundaries
-        /*if (this.type === 'spider') { //removed boundary check here
-            this.x = Math.max(0, Math.min(canvas.width, this.x));
-            this.y = Math.max(0, Math.min(canvas.height, this.y));
-        }*/
 
         this.absAngle += Math.PI;
         for (var i = 0; i < this.children.length; i++) {
@@ -353,7 +348,11 @@ class Creature {
             var r = 8; // Spider body radius
             ctx.beginPath();
             ctx.arc(this.x, this.y, r, 0, 2 * Math.PI);
+            ctx.fillStyle = "red"; // temporary color
             ctx.fill();
+            ctx.strokeStyle = "white";
+            ctx.stroke();
+            ctx.fillStyle = "white";
         }
 
         if (iter) {
@@ -419,7 +418,7 @@ function setupLizard(size, legs, tail) {
 
 function setupSpider(size, legs) {
     var s = size;
-    spider = new Creature('spider', window.innerWidth / 4, window.innerHeight / 4, 0, s * 10, s * 2.5, 0.3, 12, 0.5, 0.1, 0.5, 0.5);
+    spider = new Creature('spider', window.innerWidth / 2, window.innerHeight / 2, 0, s * 10, s * 2.5, 0.3, 12, 0.5, 0.1, 0.5, 0.5);
 
     // Body with Cephalothorax and Abdomen
     var cephalothorax = new Segment(spider, s * 3, 0, 0.5, 1.2);
