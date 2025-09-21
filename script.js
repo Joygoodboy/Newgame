@@ -33,7 +33,7 @@ document.addEventListener("mouseup", function(event) {
         Input.mouse.left = false;
     }
     if ((event.button = 1)) {
-        Input.mouse.middle = false;
+        Input.mouse.middle = true;
     }
     if ((event.button = 2)) {
         Input.mouse.right = false;
@@ -489,4 +489,3 @@ function gameLoop(timestamp) {
 }
 
 init();
-requestAnimationFrame(gameLoop);
