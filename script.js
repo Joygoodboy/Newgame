@@ -19,24 +19,24 @@ document.addEventListener("keyup", function(event) {
     Input.keys[event.keyCode] = false;
 });
 document.addEventListener("mousedown", function(event) {
-    if ((event.button = 0)) {
+    if (event.button == 0) {
         Input.mouse.left = true;
     }
-    if ((event.button = 1)) {
+    if (event.button == 1) {
         Input.mouse.middle = true;
     }
-    if ((event.button = 2)) {
+    if (event.button == 2) {
         Input.mouse.right = true;
     }
 });
 document.addEventListener("mouseup", function(event) {
-    if ((event.button = 0)) {
+    if (event.button == 0) {
         Input.mouse.left = false;
     }
-    if ((event.button = 1)) {
+    if (event.button == 1) {
         Input.mouse.middle = false;
     }
-    if ((event.button = 2)) {
+    if (event.button == 2) {
         Input.mouse.right = false;
     }
 });
@@ -368,7 +368,7 @@ var spider;
 
 function setupLizard(size, legs, tail) {
     var s = size;
-    lizard = new Creature('lizard', window.innerWidth / 2, window.innerHeight / 2, 0, s * 10, s * 2, 0.5, 16, 0.5, 0.085, 0.5, 0.3);
+    lizard = new Creature('lizard', Input.mouse.x, Input.mouse.y, 0, s * 10, s * 2, 0.5, 16, 0.5, 0.085, 0.5, 0.3);
     var spinal = lizard;
     //Neck
     for (var i = 0; i < 6; i++) {
@@ -419,7 +419,7 @@ function setupLizard(size, legs, tail) {
 
 function setupSpider(size, legs) {
     var s = size;
-    spider = new Creature('spider', window.innerWidth / 2, window.innerHeight / 2, 0, s * 10, s * 2.5, 0.3, 12, 0.5, 0.1, 0.5, 0.5);
+    spider = new Creature('spider', window.innerWidth * 0.25, window.innerHeight / 2, 0, s * 10, s * 2.5, 0.3, 12, 0.5, 0.1, 0.5, 0.5);
 
     // Body with Cephalothorax and Abdomen
     var cephalothorax = new Segment(spider, s * 3, 0, 0.5, 1.2);
