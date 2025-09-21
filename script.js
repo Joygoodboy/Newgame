@@ -1,3 +1,4 @@
+document.addEventListener('DOMContentLoaded', function() {
 var Input = {
     keys: [],
     mouse: {
@@ -492,3 +493,4 @@ function gameLoop(timestamp) {
 
 init();
 requestAnimationFrame(gameLoop);
+});
