@@ -33,7 +33,7 @@ document.addEventListener("mouseup", function(event) {
         Input.mouse.left = false;
     }
     if ((event.button = 1)) {
-        Input.mouse.middle = false;
+        Input.mouse.middle = true;
     }
     if ((event.button = 2)) {
         Input.mouse.right = false;
@@ -311,10 +311,10 @@ class Creature {
         this.y += this.speed * Math.sin(this.absAngle);
 
         // Keep spider within canvas boundaries
-        if (this.type === 'spider') {
+        /*if (this.type === 'spider') { //removed boundary check here
             this.x = Math.max(0, Math.min(canvas.width, this.x));
             this.y = Math.max(0, Math.min(canvas.height, this.y));
-        }
+        }*/
 
         this.absAngle += Math.PI;
         for (var i = 0; i < this.children.length; i++) {
@@ -326,6 +326,18 @@ class Creature {
         this.absAngle -= Math.PI;
         this.draw(true);
     }
+
+    wander() {
+        let angle = Math.random() * 2 * Math.PI;
+        let speed = 1;
+        this.x += speed * Math.cos(angle);
+        this.y += speed * Math.sin(angle);
+
+        // Keep spider within canvas boundaries
+        this.x = Math.max(0, Math.min(canvas.width, this.x));
+        this.y = Math.max(0, Math.min(canvas.height, this.y));
+    }
+
     draw(iter) {
         if (this.type === 'lizard') {
             ctx.lineWidth = 2; // Thicker lines for the lizard
@@ -472,14 +484,7 @@ function gameLoop(timestamp) {
     //spider.follow(lizard.x, lizard.y, true);
     
     // Make spider move randomly
-    let angle = Math.random() * 2 * Math.PI;
-    let speed = 1;
-    spider.x += speed * Math.cos(angle);
-    spider.y += speed * Math.sin(angle);
-
-    // Keep spider within canvas boundaries
-    spider.x = Math.max(0, Math.min(canvas.width, spider.x));
-    spider.y = Math.max(0, Math.min(canvas.height, spider.y));
+    spider.wander();
 
     requestAnimationFrame(gameLoop);
 }
