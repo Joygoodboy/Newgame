@@ -334,7 +334,6 @@ class Creature {
     }
 
     draw(iter) {
-        console.log("Creature.draw called");
         if (this.type === 'lizard') {
             ctx.lineWidth = 2; // Thicker lines for the lizard
             var r = 4;
@@ -369,7 +368,6 @@ var spider;
 function setupLizard(size, legs, tail) {
     var s = size;
     lizard = new Creature('lizard', window.innerWidth / 2, window.innerHeight / 2, 0, s * 10, s * 2, 0.5, 16, 0.5, 0.085, 0.5, 0.3);
-    console.log("Lizard created");
     var spinal = lizard;
     //Neck
     for (var i = 0; i < 6; i++) {
@@ -421,7 +419,6 @@ function setupLizard(size, legs, tail) {
 function setupSpider(size, legs) {
     var s = size;
     spider = new Creature('spider', window.innerWidth / 2, window.innerHeight / 2, 0, s * 10, s * 2.5, 0.3, 12, 0.5, 0.1, 0.5, 0.5);
-    console.log("Spider created");
 
     // Body with Cephalothorax and Abdomen
     var cephalothorax = new Segment(spider, s * 3, 0, 0.5, 1.2);
@@ -470,8 +467,6 @@ function gameLoop(timestamp) {
     lastTime = timestamp;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //ctx.fillStyle = "black";
-    //ctx.fillRect(0, 0, canvas.width, canvas.height)
     // Score based on survival time
     score = Math.floor((Date.now() - startTime) / 100);
     scoreElement.innerText = 'Score: ' + score;
@@ -489,9 +484,11 @@ function gameLoop(timestamp) {
     // Make spider move randomly
     spider.wander();
 
-    ctx.fillStyle = "white";
     lizard.draw(true);
     spider.draw(true);
 
     requestAnimationFrame(gameLoop);
 }
+
+init();
+requestAnimationFrame(gameLoop);
