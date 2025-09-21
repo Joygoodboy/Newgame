@@ -319,7 +319,7 @@ class Creature {
             this.systems[i].update(x, y);
         }
         this.absAngle -= Math.PI;
-        this.draw(true);
+        // Removed draw call here, as it's handled in gameLoop
     }
 
     wander() {
@@ -331,6 +331,12 @@ class Creature {
         // Keep spider within canvas boundaries
         this.x = Math.max(0, Math.min(canvas.width, this.x));
         this.y = Math.max(0, Math.min(canvas.height, this.y));
+
+        // Update child segments based on new spider position
+        // This part was missing and caused the spider to freeze
+        for (var i = 0; i < this.children.length; i++) {
+            this.children[i].updateRelative(true, true);
+        }
     }
 
     draw(iter) {
@@ -348,11 +354,10 @@ class Creature {
             var r = 8; // Spider body radius
             ctx.beginPath();
             ctx.arc(this.x, this.y, r, 0, 2 * Math.PI);
-            ctx.fillStyle = "red"; // temporary color
+            ctx.fillStyle = "white"; // Changed back to white
             ctx.fill();
             ctx.strokeStyle = "white";
             ctx.stroke();
-            ctx.fillStyle = "white";
         }
 
         if (iter) {
@@ -401,7 +406,7 @@ function setupLizard(size, legs, tail) {
             for (var iii = 0; iii < 4; iii++) { //fingers
                 new Segment(node, s * 4, (iii / 3 - 0.5) * 1.571, 0.1, 4);
             }
-            new LegSystem(node, 3, s * 12, lizard); //Removed extra argument
+            new LegSystem(node, 3, s * 12, lizard);
         }
     }
     //Tail
@@ -479,11 +484,11 @@ function gameLoop(timestamp) {
     }
 
     lizard.follow(Input.mouse.x, Input.mouse.y);
-    //spider.follow(lizard.x, lizard.y, true);
     
     // Make spider move randomly
     spider.wander();
 
+    ctx.fillStyle = "white";
     lizard.draw(true);
     spider.draw(true);
 
