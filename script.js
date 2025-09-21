@@ -271,6 +271,9 @@ class Creature {
         this.rThresh = rThresh;
         this.children = [];
         this.systems = [];
+        this.wanderTargetX = x;
+        this.wanderTargetY = y;
+        this.wanderTimer = 0;
     }
     follow(x, y, flee = false) {
         var dist = ((this.x - x) ** 2 + (this.y - y) ** 2) ** 0.5;
@@ -319,24 +322,16 @@ class Creature {
             this.systems[i].update(x, y);
         }
         this.absAngle -= Math.PI;
-        // Removed draw call here, as it's handled in gameLoop
     }
 
     wander() {
-        let angle = Math.random() * 2 * Math.PI;
-        let speed = 1;
-        this.x += speed * Math.cos(angle);
-        this.y += speed * Math.sin(angle);
-
-        // Keep spider within canvas boundaries
-        this.x = Math.max(0, Math.min(canvas.width, this.x));
-        this.y = Math.max(0, Math.min(canvas.height, this.y));
-
-        // Update child segments based on new spider position
-        // This part was missing and caused the spider to freeze
-        for (var i = 0; i < this.children.length; i++) {
-            this.children[i].updateRelative(true, true);
+        this.wanderTimer--;
+        if (this.wanderTimer <= 0) {
+            this.wanderTargetX = Math.random() * canvas.width;
+            this.wanderTargetY = Math.random() * canvas.height;
+            this.wanderTimer = Math.random() * 120 + 60; // Change direction every 1 to 2 seconds (assuming 60 FPS)
         }
+        this.follow(this.wanderTargetX, this.wanderTargetY, false);
     }
 
     draw(iter) {
@@ -354,7 +349,7 @@ class Creature {
             var r = 8; // Spider body radius
             ctx.beginPath();
             ctx.arc(this.x, this.y, r, 0, 2 * Math.PI);
-            ctx.fillStyle = "white"; // Changed back to white
+            ctx.fillStyle = "white"; 
             ctx.fill();
             ctx.strokeStyle = "white";
             ctx.stroke();
