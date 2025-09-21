@@ -33,7 +33,7 @@ document.addEventListener("mouseup", function(event) {
         Input.mouse.left = false;
     }
     if ((event.button = 1)) {
-        Input.mouse.middle = true;
+        Input.mouse.middle = false;
     }
     if ((event.button = 2)) {
         Input.mouse.right = false;
@@ -470,8 +470,8 @@ function gameLoop(timestamp) {
     lastTime = timestamp;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    //ctx.fillStyle = "black";
+    //ctx.fillRect(0, 0, canvas.width, canvas.height)
     // Score based on survival time
     score = Math.floor((Date.now() - startTime) / 100);
     scoreElement.innerText = 'Score: ' + score;
@@ -489,10 +489,9 @@ function gameLoop(timestamp) {
     // Make spider move randomly
     spider.wander();
 
+    ctx.fillStyle = "white";
     lizard.draw(true);
     spider.draw(true);
 
     requestAnimationFrame(gameLoop);
 }
-
-init(); 
