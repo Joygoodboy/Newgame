@@ -309,6 +309,13 @@ class Creature {
             2 * Math.PI * Math.floor(this.absAngle / (2 * Math.PI) + 1 / 2);
         this.x += this.speed * Math.cos(this.absAngle);
         this.y += this.speed * Math.sin(this.absAngle);
+
+        // Keep spider within canvas boundaries
+        if (this.type === 'spider') {
+            this.x = Math.max(0, Math.min(canvas.width, this.x));
+            this.y = Math.max(0, Math.min(canvas.height, this.y));
+        }
+
         this.absAngle += Math.PI;
         for (var i = 0; i < this.children.length; i++) {
             this.children[i].follow(true, true);
@@ -462,8 +469,18 @@ function gameLoop(timestamp) {
     }
 
     lizard.follow(Input.mouse.x, Input.mouse.y);
-    spider.follow(lizard.x, lizard.y, true);
+    //spider.follow(lizard.x, lizard.y, true);
     
+    // Make spider move randomly
+    let angle = Math.random() * 2 * Math.PI;
+    let speed = 1;
+    spider.x += speed * Math.cos(angle);
+    spider.y += speed * Math.sin(angle);
+
+    // Keep spider within canvas boundaries
+    spider.x = Math.max(0, Math.min(canvas.width, spider.x));
+    spider.y = Math.max(0, Math.min(canvas.height, spider.y));
+
     requestAnimationFrame(gameLoop);
 }
 
